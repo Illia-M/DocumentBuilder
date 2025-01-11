@@ -66,10 +66,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: List Built Files
-        run: ls -R ./publish/
-
-      - name: Create or Update Release
+        - name: Create or Update Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
