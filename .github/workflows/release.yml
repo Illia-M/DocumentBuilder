@@ -27,12 +27,12 @@ jobs:
 
       - name: Publish for ${{ matrix.runtime }}
         run: |
-          dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained true \
+          dotnet publish ./DocumentBuilder/DocumentBuilder.csproj -c Release -r ${{ matrix.runtime }} --self-contained true \
               -p:PublishSingleFile=true \
               -p:IncludeAllContentForSelfExtract=true \
               -p:EnableCompressionInSingleFile=true \
-              -p:DebugType=None \
               -o ./publish/${{ matrix.runtime }}
+              
           # Rename the output file with version
           VERSION=$(grep "<Version>" *.csproj | sed -E 's|.*<Version>(.*)</Version>.*|\1|')
           if [ "${{ matrix.runtime }}" == "win-x64" ]; then
