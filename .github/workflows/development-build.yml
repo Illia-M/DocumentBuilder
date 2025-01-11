@@ -1,0 +1,78 @@
+name: Development Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        runtime: [win-x64, osx-x64, osx-arm64, linux-x64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build for ${{ matrix.runtime }}
+        run: |
+          dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained true \
+              -p:PublishSingleFile=true \
+              -p:IncludeAllContentForSelfExtract=true \
+              -p:EnableCompressionInSingleFile=true \
+              -p:DebugType=None \
+              -o ./publish/${{ matrix.runtime }}
+
+          # Rename the output binary to include the runtime and a "latest" tag
+          if [ "${{ matrix.runtime }}" == "win-x64" ]; then
+              mv ./publish/${{ matrix.runtime }}/DocumentBuilder.exe ./publish/${{ matrix.runtime }}/document-builder-latest-${{ matrix.runtime }}.exe
+          else
+              mv ./publish/${{ matrix.runtime }}/DocumentBuilder ./publish/${{ matrix.runtime }}/document-builder-latest-${{ matrix.runtime }}
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: development-build-${{ matrix.runtime }}
+          path: ./publish/${{ matrix.runtime }}
+
+  update-development-release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create or Update Development Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: latest-development
+          release_name: "Latest Development Build"
+          body: |
+            ## Latest Development Build
+            - Auto-generated from the latest commit to the `main` branch.
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Development Build Artifacts
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./publish/${{ matrix.runtime }}
+          asset_name: document-builder-latest-${{ matrix.runtime }}
+          asset_content_type: application/octet-stream

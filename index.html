@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DocumentBuilder</title>
+  <script>
+    const userLang = navigator.language || navigator.userLanguage;
+    if (userLang.startsWith("uk")) {
+      window.location.href = "./README.uk.md";
+    } else {
+      window.location.href = "./README.md";
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>

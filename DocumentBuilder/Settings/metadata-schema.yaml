@@ -1,0 +1,45 @@
+# YAML Schema for PDF Metadata Configuration
+
+type: object
+properties:
+  outputFileName:
+    type: string
+    description: "Name of the output PDF file (e.g., result.pdf)."
+    pattern: "^[\\w,\\s-]+\\.pdf$"
+  title:
+    type: string
+    description: "Title of the PDF document."
+  author:
+    type: string
+    description: "Author of the document."
+  subject:
+    type: string
+    description: "Subject or category of the document content."
+  keywords:
+    type: string
+    description: "Keywords associated with the document, separated by commas."
+  licenseType:
+    type: string
+    description: "License type for the document, e.g., Creative Commons license."
+
+  # Page-specific metadata
+  pages:
+    type: object
+    description: "A dictionary of page-specific metadata, keyed by image file name with or without extension."
+    additionalProperties:
+      type: object
+      description: "Metadata for a specific page."
+      properties:
+        title:
+          type: string
+          description: "Custom title for the page."
+        description:
+          type: string
+          description: "Description of the page content."
+        hiddenTextOverlay:
+          type: string
+          description: "Invisible text on page."
+      additionalProperties: false
+
+required: ["outputFileName", "title"]
+additionalProperties: false
