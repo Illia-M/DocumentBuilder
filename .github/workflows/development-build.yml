@@ -54,52 +54,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check if release exists
-        id: check_release
-        run: |
-          RELEASE_ID=$(curl -s \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/latest-development" \
-            | jq -r '.id')
-          if [ "$RELEASE_ID" != "null" ]; then
-            echo "release_exists=true" >> $GITHUB_ENV
-            echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
-          else
-            echo "release_exists=false" >> $GITHUB_ENV
-          fi
-    
-      - name: Delete existing release if necessary
-        if: env.release_exists == 'true'
-        run: |
-          echo "Deleting existing release with ID $RELEASE_ID"
-          curl -s -X DELETE \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID"
-
-      - name: Create Development Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v1
         with:
+          files: ./publish/** 
           tag_name: latest-development
-          release_name: "Latest Development Build"
+          name: "Latest Development Build"
           body: |
             ## Latest Development Build
             - Auto-generated from the latest commit to the `main` branch.
-          draft: false
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Development Build Artifacts
-        run: |
-          for runtime in win-x64 osx-x64 osx-arm64 linux-x64; do
-            ASSET_PATH="./publish/$runtime/document-builder-latest-$runtime"
-            if [ "$runtime" == "win-x64" ]; then
-              ASSET_PATH="$ASSET_PATH.exe"
-            fi
-            echo "Uploading $ASSET_PATH"
-            curl -s --data-binary @"$ASSET_PATH" \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/octet-stream" \
-              "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $ASSET_PATH)"
-          done
