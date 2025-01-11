@@ -54,10 +54,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: List Built Files
+        run: ls -R ./publish/
+
       - name: Create or Update Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./publish/** 
+          files: |
+            ./publish/win-x64/document-builder-latest-win-x64.exe
+            ./publish/osx-x64/document-builder-latest-osx-x64
+            ./publish/osx-arm64/document-builder-latest-osx-arm64
+            ./publish/linux-x64/document-builder-latest-linux-x64
           tag_name: latest-development
           name: "Latest Development Build"
           body: |
