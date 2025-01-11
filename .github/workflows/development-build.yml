@@ -67,7 +67,12 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Check for build artifacts
+        run: |
+          if [ ! -d "./publish/${{ matrix.runtime }}" ] || [ -z "$(ls -A ./publish/${{ matrix.runtime }})" ]; then
+            echo "No artifacts found for ${{ matrix.runtime }}"
+            exit 1
+          fi
       - name: Upload Development Build Artifacts
         uses: actions/upload-release-asset@v1
         with:
