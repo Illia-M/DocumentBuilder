@@ -4,16 +4,25 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PackageId>DocumentBuilder.Pdf</PackageId>
     <Version>1.0.0</Version>
     <Authors>Illia Maier</Authors>
     <Description>Library for building PDF documents based on input data and metadata.</Description>
     <PackageTags>pdf;document</PackageTags>
     <RepositoryUrl>https://github.com/Illia-M/DocumentBuilder</RepositoryUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PdfSharpCore" Version="1.3.65" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.4.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  
 </Project>

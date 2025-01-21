@@ -33,7 +33,7 @@ jobs:
       - name: Publish DocumentBuilder.Pdf to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        run: dotnet nuget push ./publish/DocumentBuilder.Pdf/*.nupkg --source "github" --api-key $GITHUB_TOKEN
+        run: dotnet nuget push ./publish/DocumentBuilder.Pdf/*.nupkg --source "https://nuget.pkg.github.com/illia-m/index.json" --api-key $GITHUB_TOKEN
 
       - name: Restore dependencies
         run: dotnet restore
