@@ -29,7 +29,6 @@ public static class PDFGenerator
         if (!Directory.Exists(outputDirectory))
             throw new DirectoryNotFoundException("Output directory does not exist.");
 
-        // Supported image file types
         var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".tiff", ".tif" };
 
         var imageFiles = Directory.GetFiles(imageDirectory)
@@ -42,7 +41,7 @@ public static class PDFGenerator
 
         try
         {
-            await CreatePdf(metadata, pdfPath, imageFiles, cancellationToken);
+            await CreatePdfFile(metadata, pdfPath, imageFiles, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -58,10 +57,17 @@ public static class PDFGenerator
         }
     }
 
-    private static async Task CreatePdf(PdfMetadata metadata, string pdfPath, List<string> imageFiles, CancellationToken cancellationToken)
+    private static async Task CreatePdfFile(PdfMetadata metadata, string pdfPath, List<string> imageFiles, CancellationToken cancellationToken)
     {
         using var pdfDocument = new PdfDocument();
 
+        await BuildPdfDocument(pdfDocument, metadata, imageFiles, cancellationToken);
+
+        pdfDocument.Save(pdfPath);
+    }
+
+    private static async Task BuildPdfDocument(PdfDocument pdfDocument, PdfMetadata metadata, List<string> imageFiles, CancellationToken cancellationToken)
+    {
         pdfDocument.Options.CompressContentStreams = true;
         pdfDocument.Options.EnableCcittCompressionForBilevelImages = false;
         pdfDocument.Options.NoCompression = false;
@@ -155,8 +161,6 @@ public static class PDFGenerator
         {
             AddTableOfContents(pdfDocument, tocEntries, metadata);
         }
-
-        pdfDocument.Save(pdfPath);
     }
 
     private static List<string> WrapTextToFitPage(string text, XFont font, XGraphics gfx, double maxWidth)

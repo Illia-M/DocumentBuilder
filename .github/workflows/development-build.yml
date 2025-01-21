@@ -22,6 +22,19 @@ jobs:
         with:
           dotnet-version: '9.0'
 
+      - name: Publish DocumentBuilder.Pdf
+        run: |
+          echo "Publishing DocumentBuilder.Pdf project..."
+          dotnet pack ./DocumentBuilder.Pdf/DocumentBuilder.Pdf.csproj -c Release --output ./publish/DocumentBuilder.Pdf
+
+          echo "Contents of ./publish/DocumentBuilder.Pdf:"
+          ls -R ./publish/DocumentBuilder.Pdf
+
+      - name: Publish DocumentBuilder.Pdf to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        run: dotnet nuget push ./publish/DocumentBuilder.Pdf/*.nupkg --source "github" --api-key $GITHUB_TOKEN
+
       - name: Restore dependencies
         run: dotnet restore
 
