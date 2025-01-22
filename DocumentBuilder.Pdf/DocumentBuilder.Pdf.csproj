@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <PackageId>DocumentBuilder.Pdf</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Illia Maier</Authors>
     <Description>Library for building PDF documents based on input data and metadata.</Description>
     <PackageTags>pdf;document</PackageTags>
