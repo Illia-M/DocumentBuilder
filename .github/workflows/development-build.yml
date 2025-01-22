@@ -22,18 +22,21 @@ jobs:
         with:
           dotnet-version: '9.0'
 
-      - name: Publish DocumentBuilder.Pdf
+      - name: Publish DocumentBuilder.Pdf for Multiple Runtimes
         run: |
-          echo "Publishing DocumentBuilder.Pdf project..."
-          dotnet pack ./DocumentBuilder.Pdf/DocumentBuilder.Pdf.csproj -c Release --output ./publish/DocumentBuilder.Pdf
-
+          echo "Publishing DocumentBuilder.Pdf project for multiple runtimes..."
+      
+          # Define the runtime identifiers
+          RUNTIMES=("linux-x64" "linux-arm64" "win-x64" "win-arm64" "osx-x64" "osx-arm64")
+      
+          for RID in "${RUNTIMES[@]}"
+          do
+            echo "Packing for runtime: $RID"
+            dotnet pack ./DocumentBuilder.Pdf/DocumentBuilder.Pdf.csproj -c Release -p:RuntimeIdentifier=$RID --output ./publish/DocumentBuilder.Pdf/$RID
+          done
+      
           echo "Contents of ./publish/DocumentBuilder.Pdf:"
           ls -R ./publish/DocumentBuilder.Pdf
-
-      - name: Publish DocumentBuilder.Pdf to GitHub Packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        run: dotnet nuget push ./publish/DocumentBuilder.Pdf/*.nupkg --source "https://nuget.pkg.github.com/illia-m/index.json" --api-key $GITHUB_TOKEN
 
       - name: Restore dependencies
         run: dotnet restore

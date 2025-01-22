@@ -1,9 +1,7 @@
 using ImageMagick;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
-using System.Security.Cryptography;
 using SixLabors.ImageSharp;
-using Microsoft.VisualBasic;
 
 public static class PDFGenerator
 {
