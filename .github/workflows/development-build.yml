@@ -38,6 +38,18 @@ jobs:
           echo "Contents of ./publish/DocumentBuilder.Pdf:"
           ls -R ./publish/DocumentBuilder.Pdf
 
+      - name: Publish DocumentBuilder.Pdf to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Publishing all .nupkg files to GitHub Packages..."
+      
+          for PACKAGE in ./publish/DocumentBuilder.Pdf/*/*.nupkg
+          do
+            echo "Pushing $PACKAGE..."
+            dotnet nuget push "$PACKAGE" --source "https://nuget.pkg.github.com/illia-m/index.json" --api-key $GITHUB_TOKEN
+          done
+
       - name: Restore dependencies
         run: dotnet restore
 
